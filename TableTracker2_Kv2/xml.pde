@@ -79,7 +79,5 @@ class xml {
     xml_c12.setContent(str(TableTracker2_Kv2.xml_p2y));
 
     saveXML(myxml, filepath);
-
-    print();
   }
 }

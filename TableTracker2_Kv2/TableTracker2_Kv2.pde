@@ -1,7 +1,7 @@
 /*
 180528 - Shinn 
-Kinectv2 Table
-*/
+ Kinectv2 Table
+ */
 
 import controlP5.*;
 import KinectPV2.*;
@@ -12,7 +12,6 @@ cp5Gui callgui;
 osc callosc;
 
 Box myBox[];
-DebugFrame DF;
 xml myxml = new xml();
 
 String rows_temp;
@@ -38,11 +37,13 @@ PVector finPoint = new PVector(512, 424);
 PVector orgPoint = new PVector(50, 50);
 boolean rangesetting = false; 
 int count=0;
-String sendvalue;
+int sendvalue;
 
 boolean ShowLoadSucc = false;
 boolean ShowSaveSucc = false;
 int LoadCount=0, SaveCount=0;
+
+float RangeStep = .025f;
 
 public static float Min = 38.3;
 public static float Max = 59.2;
@@ -63,7 +64,6 @@ public static int xml_boxwidth;
 
 void settings() {
   size(1280, 500);
-  //DF = new DebugFrame(this, 1920, 1080, "Controls" );
 }
 
 void setup() {
@@ -92,18 +92,38 @@ public void draw() {
   if (drawboxst) {
     pushMatrix();
     translate(translatePos.x, translatePos.y);
+
+
+    ArrayList<Integer> sendarray = new ArrayList<Integer>();
+
     for (int j=0; j<cols; j++) {
       for (int i=0; i<rows; i++) {
         myBox[i+j*rows].Draw();
-        myBox[i+j*rows].Update();
+        //myBox[i+j*rows].Update();
 
-        if (myBox[i+j*rows].getTrigger() && SendOSC) {
-          sendvalue = str(i+j*rows);
-          callosc.oscSend("/raw", sendvalue);
-        }
+
+        color color_under_point = get((int)(myBox[i+j*rows].position().x+translatePos.x), (int)(myBox[i+j*rows].position().y+translatePos.y) );
+
+        if (brightness(color_under_point)>Min && brightness(color_under_point)<Max) {
+          myBox[i+j*rows].BoxColor = color(0, 0, 255, 50);
+
+          sendarray.add(i+j*rows);
+
+          if (SendOSC) {
+
+            for (int k=0; k<sendarray.size(); k++) {
+              sendvalue = sendarray.get(k);
+              callosc.oscSend_int("/raw", sendvalue);
+            }
+          }
+        } else 
+        myBox[i+j*rows].BoxColor = color(255, 0, 0, 50);
       }
     }
+
     popMatrix();
+
+    sendarray.clear();
   }
 
   OnGUI();
@@ -113,21 +133,20 @@ public void draw() {
     stroke(255, 255, 255);
     PVector Point;
 
-    if (count<2) {
+    if (count<2) 
       Point = new PVector(mouseX, mouseY);
-    } else {
-      Point = finPoint;
-    }
-    
-    fill(100,255,100);
+    else 
+    Point = finPoint;
+
+
+    fill(100, 255, 100);
     text("Prjection Range", orgPoint.x, orgPoint.y);
-    stroke(100,255,100);
+    stroke(100, 255, 100);
     noFill();
     rect(orgPoint.x, orgPoint.y, Point.x-orgPoint.x, Point.y-orgPoint.y);
   }
 
   if (SendInit==true) {
-    //Send OSC
 
     float ImageWidth = finPoint.x-orgPoint.x;
     float ImageHeight = finPoint.y-orgPoint.y;
@@ -150,11 +169,11 @@ public void draw() {
 
 
   if (ShowLoadSucc) {
-    
+
     textSize(12);
     text("Load XML Success!!", 625, 225);
 
-    if (LoadCount>500) {
+    if (LoadCount>300) {
       ShowLoadSucc = false;
       LoadCount=0;
     } else {
@@ -163,18 +182,31 @@ public void draw() {
   }
 
   if (ShowSaveSucc) {
-    
+
     textSize(12);
     text("Save XML Success!!", 625, 225);
 
-    if (SaveCount>500) {
+    if (SaveCount>300) {
       ShowSaveSucc = false;
       SaveCount=0;
     } else {
       SaveCount++;
     }
-    
   }
+}
+
+void keyPressed() {
+  if (key == 'q') 
+    Max += RangeStep;
+
+  if (key == 'w') 
+    Max -= RangeStep;
+
+  if (key == 'a') 
+    Min += RangeStep;
+
+  if (key == 's') 
+    Min -= RangeStep;
 }
 
 void mousePressed() {
@@ -186,7 +218,6 @@ void mousePressed() {
       rangesetting = true;
     } else if (count==1) {
       finPoint = new PVector(mouseX, mouseY);
-      print(finPoint);
     }
     count++;
   }
@@ -220,6 +251,10 @@ void OnGUI() {
   text("ex: 38, 9 ", 850, 188);
   text("ex: 11, 40", 850, 238);
   text("ex: 20, 78", 850, 288);
+
+  textSize(14);
+  text("RangeMax(q, w): " + Max, 1050, 185);
+  text("RangeMin(a, s): " + Min, 1050, 205);
 
   //error
   if (showError) {
@@ -286,12 +321,12 @@ void controlEvent(ControlEvent theControlEvent) {
     float ImageWidth = finPoint.x-orgPoint.x;
     float ImageHeight = finPoint.y-orgPoint.y;
 
-    callosc.oscSend("/width", Float.toString(ImageWidth));
-    callosc.oscSend("/height", Float.toString(ImageHeight));
-    callosc.oscSend("/rows", Integer.toString(rows));
-    callosc.oscSend("/cols", Integer.toString(cols));
-    callosc.oscSend("/step", Float.toString(step));
-    callosc.oscSend("/boxwidth", Float.toString(boxWidth));
+    callosc.oscSend_float("/width", ImageWidth);
+    callosc.oscSend_float("/height", ImageHeight);
+    callosc.oscSend_int("/rows", rows);
+    callosc.oscSend_int("/cols", cols);
+    callosc.oscSend_float("/step", step);
+    callosc.oscSend_float("/boxwidth", boxWidth);
 
     SendInit = true;
   }

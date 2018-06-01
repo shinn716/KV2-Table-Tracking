@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Prefs>
+  <pox>191.0</pox>
+  <poy>207.0</poy>
+  <pfx>458.0</pfx>
+  <pfy>336.0</pfy>
+  <rows>89</rows>
+  <cols>43</cols>
+  <step>3</step>
+  <boxwidth>5</boxwidth>
+  <thresholdLow>75.04997</thresholdLow>
+  <thresholdHigh>80.0</thresholdHigh>
+</Prefs>
