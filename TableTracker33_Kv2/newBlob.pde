@@ -1,11 +1,5 @@
 class NewBlob {
-
-  //int _width = 512;
-  //int _height = 424;
-
-  //public float tx;
-  //public float ty;
-
+  
   PImage img;
   OSC osc = new OSC();
 

@@ -26,9 +26,9 @@ class OSC {
     _address = address;
     tvalue = message;
 
-    ShowData(new PVector(512+380, 120+offsety));
+    ShowData(new PVector(512+380, 240+offsety));
 
-    if (offsety>260)
+    if (offsety>280)
       offsety=0;
     else
       offsety+=20;

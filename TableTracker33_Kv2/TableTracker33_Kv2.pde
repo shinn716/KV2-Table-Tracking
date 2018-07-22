@@ -1,8 +1,9 @@
 /*----------------------------------
- Kinect Interactive Table Traceing Ver3 (Blob + OSC).
+ Kinect Interactive Table, touch traceing (DepthSensor + Blob + OSC).
+ Ver3.3
  IP: 127.0.0.1
  Port: 12000
- Date: 20180629
+ Date: 20180716
  Author: Shinn
  ------------------------------------*/
 
@@ -83,6 +84,11 @@ void setup() {
 
   //cf = new ControlFrame(this, 1920, 1080, "Controls");
   //surface.setLocation(420, 10);
+
+  if (myxml.oscauto)
+    sendOsc = true;
+  else 
+    sendOsc = false;
 }
 
 void draw() {
@@ -239,6 +245,7 @@ void draw() {
   if (point1st && rangesetting) {
     fill(255, 0, 0);
     ellipse(rangeBeg.x, rangeBeg.y, 10, 10);
+
     if (keyPressed) {
       if (key == 'q' || key == 'Q')
         rangeBeg.x -= step_dist;
@@ -256,6 +263,7 @@ void draw() {
   if (point2st && rangesetting) {
     fill(255, 0, 0);
     ellipse(rangeEnd.x, rangeEnd.y, 10, 10);
+
     if (keyPressed) {
       if (key == 'q' || key == 'Q')
         rangeEnd.x -= step_dist;
@@ -329,19 +337,23 @@ void keyPressed() {
 
   if (key == '1') 
     minD -= step_dist;
+
   else if (key == '2') 
     minD += step_dist;
 
   if (key == '3') 
     maxD -= step_dist;
+
   else if (key == '4') 
     maxD += step_dist;
 
 
-  if (key == '5') 
+  if (key == '6') 
     blob_threshold-=1f;
-  else if (key =='6') 
+
+  else if (key =='7') 
     blob_threshold+=1f;
+
 
   if (key == '=') 
     step_dist *= 1.25f;
@@ -365,12 +377,12 @@ void cp5() {
     .setSize(80, 20)
     ;
 
-  cp5.addButton("ShowMousePos")
+  cp5.addButton("Show_MousePos")
     .setPosition(width-500, 90)
     .setSize(80, 20)
     ;
 
-  cp5.addButton("ShowColorImage")
+  cp5.addButton("Show_ColorImage")
     .setPosition(width-500, 120)
     .setSize(80, 20)
     ;
@@ -411,7 +423,7 @@ void cp5() {
     ;
 }
 
-void ShowColorImage() {
+void Show_ColorImage() {
   showColorImagest = !showColorImagest;
 }
 
@@ -424,7 +436,7 @@ void Clear() {
   rangesetting = false;
 }
 
-void ShowMousePos() {
+void Show_MousePos() {
   showMousePos = !showMousePos;
 }
 
@@ -451,6 +463,12 @@ void LoadXml() {
   minD = myxml.depthMin;
   maxD = myxml.depthMax;
   blob_threshold = myxml.blobWid;
+
+  rangeBeg = myxml.beginPos;
+  rangeEnd = myxml.finalPos;
+  count = 2;
+  rangesetting = true;
+
   ShowLoadSucc = true;
 }
 
@@ -458,6 +476,10 @@ void SaveXml() {
   myxml.depthMin = minD;
   myxml.depthMax = maxD;
   myxml.blobWid = blob_threshold;
+
+  myxml.beginPos = rangeBeg;
+  myxml.finalPos = rangeEnd;
+
   myxml.SaveXml();
   ShowSaveSucc = true;
 }

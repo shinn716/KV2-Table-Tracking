@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Prefs>
+  <blobWidth>80</blobWidth>
+  <thresholdLow>2312</thresholdLow>
+  <thresholdHigh>2362</thresholdHigh>
+  <bpx>267.0</bpx>
+  <bpy>243.0</bpy>
+  <fpx>363.0</fpx>
+  <fpy>321.0</fpy>
+  <oscAutoStart>true</oscAutoStart>
+</Prefs>
