@@ -1,5 +1,5 @@
 class NewBlob {
-  
+
   PImage img;
   OSC osc = new OSC();
 
@@ -20,6 +20,9 @@ class NewBlob {
     noFill();
     Blob b;
     EdgeVertex eA, eB;
+
+    //----Shinn add 180722
+    ArrayList<float[]> sendarray = new ArrayList<float[]>();
 
     for (int n=0; n<theBlobDetection.getBlobNb(); n++)
     {
@@ -75,30 +78,36 @@ class NewBlob {
             text(round(mapDataX)+"  "+round(mapDataY), (b.xMin*width)/3-50, (b.yMin*height));
             //text(round(b.xMin*width/3)+"  "+round(b.yMin*height), (b.xMin*width)/3, (b.yMin*height));
 
+            //---- shinn add 180722
+            float[] _array = new float[2]; 
+            _array[0] = mapDataX;
+            _array[1] = mapDataY;
+            sendarray.add(_array);
+
+
             if (sendOsc) {
 
-              //for (int k=0; k<sendArray.size(); k++) {
-
-              //  tx = sendArray.get(k).x;
-              //  ty = sendArray.get(k).y;
-
-              //  osc.oscSend_float("/posx", sendArray.get(k).x);
-              //  osc.oscSend_float("/posy", sendArray.get(k).y);
-              //}
-
-              float[] _array = new float[2]; 
-
-              _array[0] = mapDataX;
-              _array[1] = mapDataY;
-              osc.oscSend_Array("/pos", _array);
+              //float[] _array = new float[2]; 
+              //_array[0] = mapDataX;
+              //_array[1] = mapDataY;
+              //osc.oscSend_Array("/pos", _array);
+              
+              
+              for (int k=0; k<sendarray.size(); k++)
+                osc.oscSend_Array("/pos", sendarray.get(k));
+              
+              
+              
             }
 
             popMatrix();
           }
-          //sendArray.clear();
         }
       }
     }
+    
+    
+    sendarray.clear();
   }
 
   // ==================================================
